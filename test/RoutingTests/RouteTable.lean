@@ -19,6 +19,14 @@ route_table RouteTableTest
 #guard RouteTableTest.links.active = "/active"
 #guard RouteTableTest.links.edit 7 = "/todos/7/edit"
 
+-- The macro must preserve literal URI-reserved characters in the pattern,
+-- while its generated link must percent-encode them as path-segment data.
+route_table ReservedLiteralRoutes
+  [ report := "/reports/a?b#c% d" ]
+
+#guard ReservedLiteralRoutes.patterns.report = [.lit "reports", .lit "a?b#c% d"]
+#guard ReservedLiteralRoutes.links.report = "/reports/a%3Fb%23c%25%20d"
+
 -- A route built from `App.patterns` needs no pattern-string parsing of its own; `HandlerType`
 -- is computed straight from the already-parsed segments.
 private def editRoute : Route String :=
