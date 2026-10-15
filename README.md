@@ -64,7 +64,7 @@ Use `AppName.links.<name>` anywhere you need a URL for one of your routes, e.g. 
 #eval AppName.links.user 42     -- "/users/42"
 ```
 
-`AppName.links.user` is a function (`Nat → String`) because its pattern has one capture; a pattern with no captures gives a plain `String`. A `String` capture is percent-encoded, so `AppName.links.userPost 1 "a b/c"` is `"/users/1/posts/a%20b%2Fc"`, which dispatches back to `"a b/c"`. No link can carry an empty, `.` or `..` capture, so a `String` capture never matches one; validate such values (usernames, say) where they are created.
+`AppName.links.user` is a function (`Nat → String`) because its pattern has one capture; a pattern with no captures gives a plain `String`. Literal path segments and `String` captures are percent-encoded independently, so `"/reports/a?b"` generates `"/reports/a%3Fb"` and `AppName.links.userPost 1 "a b/c"` generates `"/users/1/posts/a%20b%2Fc"`. The HTTP parser decodes each segment before dispatch. No link can carry an empty, `.` or `..` capture, so a `String` capture never matches one; validate such values (usernames, say) where they are created.
 
 ### Hierarchical routes
 
