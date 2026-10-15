@@ -57,8 +57,9 @@ returning the rendered path. -/
   | .capture _ kind :: rest => kind.type → LinkType rest
 
 /-- Builds the `/`-joined path for `segs`, given the literal/rendered-capture parts collected so
-far. A `.string` capture is percent-encoded, so the link dispatches back to it unless it is
-`unlinkable`. -/
+far. Literal segments and `.string` captures are encoded individually, so URI-reserved
+characters stay within their path segments. A String capture dispatches back to its
+value unless it is `unlinkable`. -/
 def linkParts : (segs : List PathSeg) → List String → LinkType segs
   | [], parts => "/" ++ String.intercalate "/" parts
   | .lit s :: rest, parts =>
