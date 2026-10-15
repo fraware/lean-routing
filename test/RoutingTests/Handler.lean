@@ -64,7 +64,7 @@ private def served (link : String) : List String :=
 -- Literal segments must survive the same URL-parser boundary as String captures.
 -- In particular, reserved characters must stay in the path rather than becoming
 -- query/fragment delimiters or being mistaken for percent-encoded input.
-private def reservedLiteralPattern : List PathSeg :=
+private abbrev reservedLiteralPattern : List PathSeg :=
   [.lit "reports", .lit "a?b#c% d"]
 
 #guard linkFor reservedLiteralPattern = "/reports/a%3Fb%23c%25%20d"
