@@ -95,7 +95,7 @@ private local instance (priority := high) : Plausible.Arbitrary String where
     if unlinkable name then none else some name)
   { numInst := 1000, quiet := true }
 
--- Differentially exercise literal reverse routing across the real Std.Http
+-- Property-check literal reverse routing across the real Std.Http
 -- request-target parser, using the same reserved-character-biased generator.
 -- Empty/dot segments are excluded because their client-side normalization
 -- is outside this encoding correction.
