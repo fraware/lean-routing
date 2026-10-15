@@ -61,7 +61,8 @@ far. A `.string` capture is percent-encoded, so the link dispatches back to it u
 `unlinkable`. -/
 def linkParts : (segs : List PathSeg) → List String → LinkType segs
   | [], parts => "/" ++ String.intercalate "/" parts
-  | .lit s :: rest, parts => linkParts rest (parts ++ [s])
+  | .lit s :: rest, parts =>
+    linkParts rest (parts ++ [toString (Std.Http.URI.EncodedSegment.encode s)])
   | .capture _ .nat :: rest, parts => fun n => linkParts rest (parts ++ [toString n])
   | .capture _ .string :: rest, parts => fun s =>
     linkParts rest (parts ++ [toString (Std.Http.URI.EncodedSegment.encode s)])
