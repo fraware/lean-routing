@@ -63,6 +63,22 @@ route_table MountTwiceTest
 #guard MountTwiceTest.links.site.home = "/site/"
 #guard MountTwiceTest.links.site.blog.index = "/site/blog/"
 
+-- Both the mount prefix and the child route are made of literal segments;
+-- each must be URL-encoded without changing the decoded routing pattern.
+route_table ReservedMountChild
+  [ index := "/",
+    item := "/a?b" ]
+
+route_table ReservedMountParent
+  [ group := mount "/pre#fix" ReservedMountChild ]
+
+#guard ReservedMountParent.patterns.group.item =
+  [.lit "pre#fix", .lit "a?b"]
+#guard ReservedMountParent.links.group.index = "/pre%23fix/"
+#guard ReservedMountParent.links.group.item = "/pre%23fix/a%3Fb"
+#guard relativeUrl ReservedMountParent.links.group.index
+  ReservedMountParent.links.group.item = "a%3Fb"
+
 -- Negative-compile regression: a mount prefix with a capture is a command-time error
 -- (`prefixSegsSrcFor`, `RouteTable.lean`); mount prefixes must be literal.
 /--
