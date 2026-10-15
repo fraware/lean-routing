@@ -61,6 +61,22 @@ does with a request's target. -/
 private def served (link : String) : List String :=
   ((Std.Http.RequestTarget.parse? link).map (·.path.toDecodedSegments.toList)).getD []
 
+-- Literal segments must survive the same URL-parser boundary as String captures.
+-- In particular, reserved characters must stay in the path rather than becoming
+-- query/fragment delimiters or being mistaken for percent-encoded input.
+private def reservedLiteralPattern : List PathSeg :=
+  [.lit "reports", .lit "a?b#c% d"]
+
+#guard linkFor reservedLiteralPattern = "/reports/a%3Fb%23c%25%20d"
+#guard served (linkFor reservedLiteralPattern) = ["reports", "a?b#c% d"]
+#guard dispatch reservedLiteralPattern "matched"
+  (served (linkFor reservedLiteralPattern)) = some "matched"
+
+-- Exercise other URI delimiters and non-ASCII literal segments through Std.Http.
+#guard served (linkFor [.lit "reports", .lit "a/b"]) = ["reports", "a/b"]
+#guard served (linkFor [.lit "reports", .lit "%2F"]) = ["reports", "%2F"]
+#guard served (linkFor [.lit "café", .lit "a?b"]) = ["café", "a?b"]
+
 #guard ["", ".", ".."].all fun name =>
   dispatch namePattern nameHandler (served (linkFor namePattern name)) == none
 
